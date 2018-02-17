@@ -1,0 +1,34 @@
+- name: "install mysql"
+  yum: name={{ item }} state=installed
+  with_items:
+  - mariadb-server
+  - MySQL-python
+
+- name: "copy configure file"
+  template: src=my.cnf dest=/etc/my.cnf force=yes
+
+- name: "start enable mariadb"
+  service:  name=mariadb state=started enabled=yes
+
+- name: "change root password"
+  mysql_user: name=root host=localhost password={{ mariadb.config.password }}
+  ignore_errors: true
+
+- name: "remove root on ipv6 or hostname"
+  mysql_user: login_user=root login_password={{ mariadb.config.password }} name=root host={{ item }} state=absent
+  with_items:
+  - "{{ ansible_hostname }}"
+  - 127.0.0.1
+  - ::1 
+
+- name: "remove users with no name"
+  mysql_user: login_user=root login_password={{ mariadb.config.password }} name="" host={{ item }} state=absent
+  with_items:
+  - "{{ ansible_hostname }}"
+  - 127.0.0.1
+  - localhost
+
+- name: Remove MySQL test database.
+  mysql_db: login_user=root login_password={{ mariadb.config.password }} name='test' state=absent
+  ignore_errors: true
+

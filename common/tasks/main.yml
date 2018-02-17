@@ -1,0 +1,8 @@
+- name: install sysstat nmap lrzsz
+  yum: name={{ item }} state=installed
+  with_items:
+  - git
+  - nmap
+  - lrzsz
+  - sysstat
+  - nethogs

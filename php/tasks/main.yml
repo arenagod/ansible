@@ -1,0 +1,14 @@
+- name: "installing php"
+  yum: name={{ item }} state=installed
+  with_items:
+  - php-mbstring
+  - php-gd
+  - php-mcrypt
+  - php-imap
+  - php-bcmath
+  - php-fpm
+  - php-mysql
+  - php
+
+- name: start and enable php-fpm
+  service: name=php-fpm state=started enabled=yes
